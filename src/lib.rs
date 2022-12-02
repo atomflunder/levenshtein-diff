@@ -31,7 +31,17 @@ use util::DistanceMatrix;
 /// assert_eq!(distance, 3);
 /// ```
 pub fn distance<T: PartialEq>(source: &[T], target: &[T]) -> (usize, DistanceMatrix) {
-    levenshtein_memoization(source, target)
+    let lev = Levenshtein { weights: (1, 1, 1) };
+    lev.memoization(source, target)
+}
+
+pub fn distance_with_weights<T: PartialEq>(
+    source: &[T],
+    target: &[T],
+    weights: (usize, usize, usize),
+) -> (usize, DistanceMatrix) {
+    let lev = Levenshtein { weights };
+    lev.memoization(source, target)
 }
 
 #[cfg(test)]

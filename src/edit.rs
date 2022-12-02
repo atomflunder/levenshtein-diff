@@ -126,7 +126,7 @@ pub fn generate_edits<T: Clone + PartialEq>(
     let mut source_idx = source.len();
     let mut target_idx = target.len();
 
-    if source_idx + 1 != distances.len() || target_idx + 1 != distances[0].len() {
+    if source_idx + 1 != distances.table.len() || target_idx + 1 != distances.table[0].len() {
         return Err(LevenshteinError::InvalidDistanceMatrixError);
     }
 
@@ -135,23 +135,23 @@ pub fn generate_edits<T: Clone + PartialEq>(
     // When both source and target indices are 0, we have succesfully computed all the edits
     // required to transform the source into the target
     while source_idx != 0 || target_idx != 0 {
-        let current_item = distances[source_idx][target_idx];
+        let current_item = distances.table[source_idx][target_idx];
 
         // These represent the options we have: substitute, insert and delete
         let substitute = if source_idx > 0 && target_idx > 0 {
-            distances[source_idx - 1][target_idx - 1]
+            distances.table[source_idx - 1][target_idx - 1]
         } else {
             usize::MAX
         };
 
         let delete = if source_idx > 0 {
-            distances[source_idx - 1][target_idx]
+            distances.table[source_idx - 1][target_idx]
         } else {
             usize::MAX
         };
 
         let insert = if target_idx > 0 {
-            distances[source_idx][target_idx - 1]
+            distances.table[source_idx][target_idx - 1]
         } else {
             usize::MAX
         };
@@ -221,7 +221,12 @@ mod tests {
             Edit::<u8>::Delete(2),
         ];
 
-        let edits = generate_edits(s1.as_bytes(), s2.as_bytes(), &distances).unwrap();
+        let edits = generate_edits(
+            s1.as_bytes(),
+            s2.as_bytes(),
+            &DistanceMatrix::new_with_default_weights(distances),
+        )
+        .unwrap();
 
         assert_eq!(do_vecs_match(&edits, &expected_edits), true);
     }

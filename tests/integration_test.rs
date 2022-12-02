@@ -1,3 +1,4 @@
+use levenshtein::Levenshtein;
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 
@@ -49,12 +50,11 @@ fn test_strings_have_same_distances() {
     let random_str_1 = rand_alnum_string(random_len_1);
     let random_str_2 = rand_alnum_string(random_len_2);
 
-    let leven_naive =
-        levenshtein::levenshtein_naive(random_str_1.as_bytes(), random_str_2.as_bytes());
-    let (leven_tab, _) =
-        levenshtein::levenshtein_tabulation(random_str_1.as_bytes(), random_str_2.as_bytes());
-    let (leven_memo, _) =
-        levenshtein::levenshtein_memoization(random_str_1.as_bytes(), random_str_2.as_bytes());
+    let lev = Levenshtein { weights: (1, 1, 1) };
+
+    let leven_naive = lev.naive(random_str_1.as_bytes(), random_str_2.as_bytes());
+    let (leven_tab, _) = lev.tabulation(random_str_1.as_bytes(), random_str_2.as_bytes());
+    let (leven_memo, _) = lev.memoization(random_str_1.as_bytes(), random_str_2.as_bytes());
 
     // Putting all three assertions here though one would be redundant to easily identify the
     // broken function if the test fails
