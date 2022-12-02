@@ -1,9 +1,11 @@
+/// Represents the edit distance matrix in a struct holding the table and the given weights for Insertion, Deletion and Substitution.
 pub struct DistanceMatrix {
     pub table: Vec<Vec<usize>>,
     pub weights: (usize, usize, usize),
 }
 
 impl DistanceMatrix {
+    /// Creates a new DistanceMatrix struct with the given table and weights.
     pub fn new(matrix: Vec<Vec<usize>>, weights: (usize, usize, usize)) -> Self {
         Self {
             table: matrix,
@@ -11,10 +13,12 @@ impl DistanceMatrix {
         }
     }
 
+    /// Creates a new DistanceMatrix struct with the given table and default weights all set to 1.
     pub fn new_with_default_weights(matrix: Vec<Vec<usize>>) -> Self {
         Self::new(matrix, (1, 1, 1))
     }
 
+    /// Prints the distance matrix table in a human readable format.
     pub fn print_table(&self) {
         for row in &self.table {
             for item in row {

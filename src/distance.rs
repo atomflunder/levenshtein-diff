@@ -2,17 +2,25 @@ use std::cmp::{max, min};
 
 use crate::util::*;
 
+/// Calculate the Levenshtein distance between two sequences.
+///
+/// You can set the weights of Insertion, Deletion, and Substitution manually,
+/// or use [`default`](Self::default()) for default weights.
 pub struct Levenshtein {
     pub weights: (usize, usize, usize),
 }
 
+impl Default for Levenshtein {
+    /// Create a new Levenshtein struct with the weights all being set to 1.
+    fn default() -> Self {
+        Self { weights: (1, 1, 1) }
+    }
+}
+
 impl Levenshtein {
+    /// Create a new Levenshtein struct with the given weights for Insertion, Deletion, and Substitution.
     pub fn new(weights: (usize, usize, usize)) -> Self {
         Self { weights }
-    }
-
-    pub fn new_with_default_weights() -> Self {
-        Self::new((1, 1, 1))
     }
 
     /// Returns the Levenshtein distance between source and target using Naive Recursion
@@ -36,7 +44,7 @@ impl Levenshtein {
     /// let s2 = "SUNDAY";
     /// let expected_leven = 3;
 
-    /// let lev = Levenshtein::new_with_default_weights();
+    /// let lev = Levenshtein::default();
     /// let lev_naive = lev.naive(s1.as_bytes(), s2.as_bytes());
     /// assert_eq!(lev_naive, expected_leven);
     /// ```
@@ -77,7 +85,7 @@ impl Levenshtein {
     /// let s2 = "SUNDAY";
     /// let expected_leven = 3;
 
-    /// let lev = Levenshtein::new_with_default_weights();
+    /// let lev = Levenshtein::default();
     /// let (lev_tab, _) = lev.tabulation(s1.as_bytes(), s2.as_bytes());
     /// assert_eq!(lev_tab, expected_leven);
     /// ```
@@ -126,7 +134,7 @@ impl Levenshtein {
     /// let s2 = "SUNDAY";
     /// let expected_leven = 3;
 
-    /// let lev = Levenshtein::new_with_default_weights();
+    /// let lev = Levenshtein::default();
     /// let (lev_memo, _) = lev.memoization(s1.as_bytes(), s2.as_bytes());
     /// assert_eq!(lev_memo, expected_leven);
     /// ```
