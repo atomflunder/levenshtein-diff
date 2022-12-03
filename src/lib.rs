@@ -34,6 +34,14 @@ pub fn distance<T: PartialEq>(source: &[T], target: &[T]) -> (usize, DistanceMat
     levenshtein_memoization(source, target)
 }
 
+pub fn distance_weights<T: PartialEq>(
+    source: &[T],
+    target: &[T],
+    weights: &(usize, usize, usize),
+) -> (usize, DistanceMatrix) {
+    levenshtein_memoization_weights(source, target, weights)
+}
+
 #[cfg(test)]
 mod tests {
     use crate::*;

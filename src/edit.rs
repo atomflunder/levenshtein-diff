@@ -25,7 +25,7 @@ impl fmt::Display for LevenshteinError {
 impl Error for LevenshteinError {}
 
 /// Represents an Edit applied on a source sequence.
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
 pub enum Edit<T: PartialEq> {
     Delete(usize),        // Delete item at index
     Insert(usize, T),     // Insert item T at index
@@ -159,21 +159,21 @@ pub fn generate_edits<T: Clone + PartialEq>(
         let min = min(min(insert, delete), substitute);
 
         if min == current_item {
-            source_idx = source_idx - 1;
-            target_idx = target_idx - 1;
+            source_idx -= 1;
+            target_idx -= 1;
         } else if min == current_item - 1 {
             if min == insert {
                 // The edits are expected to be 1-indexed, but the slices obviously aren't
                 // Hence we do target_idx - 1 to access the right value
                 edits.push(Edit::Insert(source_idx, target[target_idx - 1].clone()));
-                target_idx = target_idx - 1;
+                target_idx -= 1;
             } else if min == delete {
                 edits.push(Edit::Delete(source_idx));
-                source_idx = source_idx - 1;
+                source_idx -= 1;
             } else if min == substitute {
                 edits.push(Edit::Substitute(source_idx, target[target_idx - 1].clone()));
-                source_idx = source_idx - 1;
-                target_idx = target_idx - 1;
+                source_idx -= 1;
+                target_idx -= 1;
             } else {
                 return Err(LevenshteinError::InvalidDistanceMatrixError);
             };
@@ -223,7 +223,7 @@ mod tests {
 
         let edits = generate_edits(s1.as_bytes(), s2.as_bytes(), &distances).unwrap();
 
-        assert_eq!(do_vecs_match(&edits, &expected_edits), true);
+        assert!(do_vecs_match(&edits, &expected_edits));
     }
 
     #[test]
@@ -232,13 +232,13 @@ mod tests {
         let expected_s2 = "SUNDAY";
 
         // Edits that convert SATURDAY to SUNDAY
-        let mut edits = vec![
+        let edits = vec![
             Edit::<u8>::Substitute(5, 78),
             Edit::<u8>::Delete(3),
             Edit::<u8>::Delete(2),
         ];
 
-        let s2_bytes_vec = apply_edits(s1.as_bytes(), &mut edits);
+        let s2_bytes_vec = apply_edits(s1.as_bytes(), &edits);
 
         let s2 = match std::str::from_utf8(&s2_bytes_vec) {
             Ok(v) => v,
